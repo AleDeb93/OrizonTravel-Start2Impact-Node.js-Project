@@ -1,5 +1,6 @@
-const { DataTypes } = requre('sequelize');
-const sequelize = requre('../config/database.js');
+const { DataTypes } = require('sequelize');
+const sequelize = require ('../config/database.js');
+
 
 // Definisco il modello di Product
 const Product = sequelize.define('Product', {
@@ -11,4 +12,4 @@ const Product = sequelize.define('Product', {
     timestamps: true
 });
 
-mosule.export = Product;
+module.exports = Product;

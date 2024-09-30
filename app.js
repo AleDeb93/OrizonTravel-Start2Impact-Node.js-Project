@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const app = express();
 
 // Importo i router
-const userRoter = require('./routes/users');
-const productRouter = require('./routes/products');
-const orderRouter = require('./routes/orders'); 
+const userRoter = require('./routes/userRoutes');
+const productRouter = require('./routes/productRoutes');
+const orderRouter = require('./routes/orderRoutes'); 
 
 app.use(bodyParser.json());
 
