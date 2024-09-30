@@ -3,24 +3,25 @@ const User = require('../models/user');
 const Product = require('../models/product');
 
 const orderController = {
-    // GET /api/v1/orders?status=completed
+    // GET /api/v1/orders
     getAllOrders: async (req, res) => {
-        const { status } = req.query;
-        const filter = {};
+        // Estrazione di tutti i parametri della query
+        const { status, startDate, endDate, userId, productId } = req.query; 
+        const filter = {}; // Oggetto di filtro
 
-        // Controllo se esiste il filtro per stato dell'ordine, se esiste lo suo
+        // Controllo se esiste il filtro per stato dell'ordine, se esiste lo uso
         if (status) {
             filter.status = status;
         }
 
         // Controllo se esiste un filtro per data, se esiste lo uso
         if (startDate || endDate) {
-            filter.createdAt = {};
+            filter.createdAt = {}; // Inizializza il filtro per la data
             if (startDate) {
-                filter.createdAt[Op.gte] = new Date(startDate);
+                filter.createdAt[Op.gte] = new Date(startDate); // Filtro per la data di inizio
             }
             if (endDate) {
-                filter.createdAt[Op.lte] = new Date(endDate);
+                filter.createdAt[Op.lte] = new Date(endDate); // Filtro per la data di fine
             }
         }
 
@@ -36,10 +37,10 @@ const orderController = {
 
         try {
             const orders = await Order.findAll({
-                where: filter,
-                include: [User, Product]
+                where: filter, // Applica i filtri
+                include: [User, Product] // Include gli utenti e i prodotti associati
             });
-            res.status(200).json(orders);
+            res.status(200).json(orders); // Restituisci gli ordini
         } catch (error) {
             res.status(500).json({ error: 'Errore nel recupero degli ordini' });
         }
