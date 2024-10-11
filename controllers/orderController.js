@@ -1,7 +1,7 @@
 const Order = require('../models/order');
 const User = require('../models/user');
 const Product = require('../models/product');
-const { Op } = require('sequelize');
+const { Op, Model, where } = require('sequelize');
 
 const orderController = {
     // GET /api/v1/orders
@@ -9,6 +9,7 @@ const orderController = {
         // Estrazione di tutti i parametri della query
         const { status, startDate, endDate, userId, productId } = req.query;
         const filter = {}; // Oggetto di filtro
+        const include = []; // Array per associazioni
 
         // Controllo se esiste il filtro per stato dell'ordine, se esiste lo uso
         if (status) {
@@ -28,12 +29,16 @@ const orderController = {
 
         // Controllo se esiste un filtro per User, se esiste lo uso
         if (userId) {
-            filter.userId = userId;
+            filter.user_id = userId;
+            include.push({model: User});
         }
 
         // Controllo se esiste un filtro per Product, se esiste lo uso
         if (productId) {
-            filter.productId = productId;
+            include.push({
+                model: Product,
+                where: {id: productId}
+            })
         }
 
         try {
@@ -49,12 +54,31 @@ const orderController = {
 
     // POST /api/v1/orders
     createOrder: async (req, res) => {
-        try {
-            const newOrder = await Order.create(req.body);
-            res.status(201).json(newOrder);
-        } catch (error) {
-            res.status(500).json({ error: `Errore durante la creazione dell'ordine` });
+        // Estraggo userId e productId dal body
+        const { userId, Products, ...orderData } = req.body; 
+    try {
+        // Trovo l'utente
+        const user = await User.findByPk(userId);
+        // Se non ho l' utente torno un errore
+        if (!user) {
+            return res.status(404).json({ error: 'Utente non trovato' });
         }
+        
+        // Creo un nuovo ordine associato all'utente
+        const newOrder = await Order.create({
+            ...orderData,
+            user_id: user.id 
+        });
+
+        // Se ci sono prodotti da aggiungere, associo i prodotti all'ordine
+        if (Products && Products.length > 0) {
+            await newOrder.setProducts(Products.map(p => p.id)); 
+        }
+        // Restituisco l' ordine appena creato
+        res.status(201).json(newOrder); 
+    } catch (error) {
+        res.status(500).json({ error: `Errore durante la creazione dell'ordine: ${error.message}` });
+    }
     },
 
     // PUT /api/v1/orders/:id
