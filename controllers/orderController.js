@@ -1,12 +1,13 @@
 const Order = require('../models/order');
 const User = require('../models/user');
 const Product = require('../models/product');
+const { Op } = require('sequelize');
 
 const orderController = {
     // GET /api/v1/orders
     getAllOrders: async (req, res) => {
         // Estrazione di tutti i parametri della query
-        const { status, startDate, endDate, userId, productId } = req.query; 
+        const { status, startDate, endDate, userId, productId } = req.query;
         const filter = {}; // Oggetto di filtro
 
         // Controllo se esiste il filtro per stato dell'ordine, se esiste lo uso
@@ -27,12 +28,12 @@ const orderController = {
 
         // Controllo se esiste un filtro per User, se esiste lo uso
         if (userId) {
-            filter.userId = userId;  
+            filter.userId = userId;
         }
 
         // Controllo se esiste un filtro per Product, se esiste lo uso
         if (productId) {
-            filter.productId = productId;  
+            filter.productId = productId;
         }
 
         try {

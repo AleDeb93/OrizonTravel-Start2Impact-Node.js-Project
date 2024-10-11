@@ -16,7 +16,7 @@ const Order = sequelize.define('Order', {
 });
 // Definisco le relazioni 1-N con User N-N con Product
 Order.belongsTo(User, { foreignKey: 'user_id' });
-Order.belongsToMany(Product, { through: 'order_products' });
-Product.belongsToMany(Order, { through: 'order_products' });
+Order.belongsToMany(Product, { through: 'order_products', /*foreignKey: 'order_id'*/});
+Product.belongsToMany(Order, { through: 'order_products', /*foreignKey: 'product_id' */});
 
 module.exports = Order;
