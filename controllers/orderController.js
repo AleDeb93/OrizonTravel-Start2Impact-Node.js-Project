@@ -30,27 +30,32 @@ const orderController = {
         // Controllo se esiste un filtro per User, se esiste lo uso
         if (userId) {
             filter.user_id = userId;
-            include.push({model: User});
+            include.push({ model: User });
         }
 
         // Controllo se esiste un filtro per Product, se esiste lo uso
         if (productId) {
             include.push({
                 model: Product,
-                where: {id: productId}
-            })
+                where: { id: productId }, // Filtro per ID del prodotto
+                through: {
+                    attributes: [] // Escludi i dettagli dalla tabella intermedia
+                }
+            });
         }
 
         try {
             const orders = await Order.findAll({
                 where: filter, // Applica i filtri
-                include: [User, Product] // Include gli utenti e i prodotti associati
+                include: include // Include gli utenti e i prodotti associati
             });
             res.status(200).json(orders); // Restituisci gli ordini
         } catch (error) {
+            console.error(error); // Logga l'errore
             res.status(500).json({ error: 'Errore nel recupero degli ordini' });
         }
     },
+
 
     // POST /api/v1/orders
     createOrder: async (req, res) => {
