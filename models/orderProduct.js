@@ -1,9 +1,10 @@
 // models/orderProduct.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Product = require('./product');
 
 const OrderProduct = sequelize.define('OrderProduct', {
-    order_id: {
+    OrderId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
@@ -11,7 +12,7 @@ const OrderProduct = sequelize.define('OrderProduct', {
             key: 'id'
         }
     },
-    product_id: {
+    ProductId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {

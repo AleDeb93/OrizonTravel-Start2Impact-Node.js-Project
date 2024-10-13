@@ -60,30 +60,30 @@ const orderController = {
     // POST /api/v1/orders
     createOrder: async (req, res) => {
         // Estraggo userId e productId dal body
-        const { userId, Products, ...orderData } = req.body; 
-    try {
-        // Trovo l'utente
-        const user = await User.findByPk(userId);
-        // Se non ho l' utente torno un errore
-        if (!user) {
-            return res.status(404).json({ error: 'Utente non trovato' });
-        }
-        
-        // Creo un nuovo ordine associato all'utente
-        const newOrder = await Order.create({
-            ...orderData,
-            user_id: user.id 
-        });
+        const { userId, Products, ...orderData } = req.body;
+        try {
+            // Trovo l'utente
+            const user = await User.findByPk(userId);
+            // Se non ho l' utente torno un errore
+            if (!user) {
+                return res.status(404).json({ error: 'Utente non trovato' });
+            }
 
-        // Se ci sono prodotti da aggiungere, associo i prodotti all'ordine
-        if (Products && Products.length > 0) {
-            await newOrder.setProducts(Products.map(p => p.id)); 
+            // Creo un nuovo ordine associato all'utente
+            const newOrder = await Order.create({
+                ...orderData,
+                user_id: user.id
+            });
+
+            // Se ci sono prodotti da aggiungere, associo i prodotti all'ordine
+            if (Products && Products.length > 0) {
+                await newOrder.setProducts(Products.map(p => p.id));
+            }
+            // Restituisco l' ordine appena creato
+            res.status(201).json(newOrder);
+        } catch (error) {
+            res.status(500).json({ error: `Errore durante la creazione dell'ordine: ${error.message}` });
         }
-        // Restituisco l' ordine appena creato
-        res.status(201).json(newOrder); 
-    } catch (error) {
-        res.status(500).json({ error: `Errore durante la creazione dell'ordine: ${error.message}` });
-    }
     },
 
     // PUT /api/v1/orders/:id
